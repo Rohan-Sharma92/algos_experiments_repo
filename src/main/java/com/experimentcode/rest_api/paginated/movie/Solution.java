@@ -8,6 +8,10 @@ import java.net.HttpURLConnection;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
+
+import org.apache.http.impl.nio.client.CloseableHttpAsyncClient;
+import org.apache.http.impl.nio.client.HttpAsyncClients;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
@@ -18,9 +22,9 @@ public class Solution {
 	/*
 	 * Complete the function below.
 	 */
-	private static final String BASE_URL = "https://jsonmock.hackerrank.com/api/movies/search/";
+	public static final String BASE_URL = "https://jsonmock.hackerrank.com/api/movies/search/";
 	private IURLFactory factory;
-	
+
 	public Solution(IURLFactory factory) {
 		this.factory = factory;
 	}
@@ -57,16 +61,34 @@ public class Solution {
 
 	}
 
+	public String[] getMovieTitlesUsingApacheHttpClient(String substr) {
+		CountDownLatch latch=new CountDownLatch(1);
+		List<String> titles = new ArrayList<>();
+		CloseableHttpAsyncClient client = HttpAsyncClients.createMinimal();
+		client.start();
+		ApacheClientHelper helper=new ApacheClientHelper(client, titles, latch);
+		helper.fetchData(substr, 1);
+		try {
+			latch.await();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		Collections.sort(titles, (a, b) -> a.compareTo(b));
+		return titles.toArray(new String[] {});
+
+	}
+
 	private String generateURL(String substr, int startPage) throws UnsupportedEncodingException {
-		String query = String.format("Title=%s&page=%s",substr,startPage);
-		return BASE_URL + "?"+query;
+		String query = String.format("Title=%s&page=%s", substr, startPage);
+		return BASE_URL + "?" + query;
 	}
 
 	public static void main(String[] args) throws IOException {
 		String[] res;
 		String _substr;
-		URLFactory factory=new URLFactory();
-		Solution s=new Solution(factory);
+		URLFactory factory = new URLFactory();
+		Solution s = new Solution(factory);
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 		try {
 			_substr = br.readLine();
@@ -74,7 +96,7 @@ public class Solution {
 			_substr = null;
 		}
 
-		res = s.getMovieTitles(_substr);
+		res = s.getMovieTitlesUsingApacheHttpClient(_substr);
 		for (int res_i = 0; res_i < res.length; res_i++) {
 			System.out.println(res[res_i]);
 		}
