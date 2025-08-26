@@ -4,7 +4,6 @@
 
 plugins {
     `java-library`
-    `maven-publish`
 }
 
 repositories {
@@ -30,9 +29,3 @@ group = "com.experimentcode"
 version = "0.0.1-SNAPSHOT"
 description = "algo"
 java.sourceCompatibility = JavaVersion.VERSION_1_8
-
-publishing {
-    publications.create<MavenPublication>("maven") {
-        from(components["java"])
-    }
-}
