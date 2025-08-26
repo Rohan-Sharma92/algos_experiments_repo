@@ -15,5 +15,6 @@ HELP.md
 *.iml
 *.ipr
 
-### NetBeans ###
+### Gradle ###
 /.gradle
+/.build
