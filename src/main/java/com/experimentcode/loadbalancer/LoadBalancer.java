@@ -1,37 +1,31 @@
 package com.experimentcode.loadbalancer;
 
-import java.net.URL;
-import java.util.ArrayList;
+import java.net.URI;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class LoadBalancer {
 
-    private final Map<String, List<URL>> serviceRegistry = new ConcurrentHashMap<>();
+    private final Map<String, List<URI>> serviceRegistry = new ConcurrentHashMap<>();
     private final Map<String, AtomicInteger> state = new ConcurrentHashMap<>();
 
-    public void registerService(String name, URL url){
-        if(url==null){
+    public void registerService(String name, URI uri){
+        if(uri==null){
             throw new IllegalStateException("URL not specified for" + name);
         }
-        serviceRegistry.putIfAbsent(name, new ArrayList<>());
-        List<URL> urls = serviceRegistry.get(name);
-        synchronized (urls){
-            serviceRegistry.get(name).add(url);
-            state.putIfAbsent(name, new AtomicInteger(0));
-        }
+        serviceRegistry.computeIfAbsent(name, k -> new CopyOnWriteArrayList<>()).add(uri);
+        state.putIfAbsent(name, new AtomicInteger(0));
     }
 
-    public void deRegisterService(String name, URL url){
-        if(url==null || isInvalid(name)){
-            throw new IllegalStateException("URL not specified for" + name);
-        }
-        List<URL> urls = serviceRegistry.get(name);
-        synchronized (urls){
-            urls.remove(url);
-            if(urls.isEmpty()){
+    public void deregisterService(String name, URI uri){
+        List<URI> uris = serviceRegistry.get(name);
+        if(uris!=null){
+            uris.remove(uri);
+            if(uris.isEmpty()){
                 serviceRegistry.remove(name);
                 state.remove(name);
             }
@@ -42,17 +36,21 @@ public class LoadBalancer {
         return serviceRegistry.get(name)==null || serviceRegistry.get(name).isEmpty();
     }
 
-    private URL getURL(String name){
-        List<URL> urls = serviceRegistry.get(name);
-       int index = Math.abs(state.get(name).getAndIncrement() % urls.size());
-       return urls.get(index);
+    private URI getURI(String name){
+        List<URI> uris = serviceRegistry.get(name);
+       int index = Math.abs(state.get(name).getAndIncrement() % uris.size());
+       return uris.get(index);
     }
 
-    public URL forwardRequest(String name) throws IllegalStateException{
+    public URI forwardRequest(String name) throws IllegalStateException{
         if(isInvalid(name)){
             throw new IllegalStateException("Invalid request");
         }
-        return getURL(name);
+        return getURI(name);
+    }
+
+    public Map<String, List<URI>> getServiceRegistry(){
+        return Collections.unmodifiableMap(serviceRegistry);
     }
 
 }
