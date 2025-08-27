@@ -4,7 +4,7 @@
 [versions]
 com-google-code-gson-gson = "2.13.1"
 com-google-code-guice-guice = "1.0"
-com-google-guava-guava = "27.0.1-jre"
+com-google-guava-guava = "33.4.8-jre"
 com-google-inject-guice = "7.0.0"
 com-google-inject-myextensions-guice-multibindings = "4.2.3"
 com-squareup-okhttp3-okhttp = "5.1.0"
