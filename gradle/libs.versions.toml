@@ -2,13 +2,13 @@
 # https://docs.gradle.org/current/userguide/platforms.html#sub::toml-dependencies-format
 
 [versions]
-com-google-code-gson-gson = "2.8.5"
+com-google-code-gson-gson = "2.8.9"
 com-google-code-guice-guice = "1.0"
 com-google-guava-guava = "27.0.1-jre"
-com-google-inject-guice = "4.1.0"
+com-google-inject-guice = "7.0.0"
 com-google-inject-myextensions-guice-multibindings = "4.1.0"
 com-squareup-okhttp3-okhttp = "5.1.0"
-junit-junit = "4.12"
+junit-junit = "4.13.2"
 org-apache-commons-commons-lang3 = "3.7"
 org-apache-httpcomponents-httpasyncclient = "4.0.1"
 
