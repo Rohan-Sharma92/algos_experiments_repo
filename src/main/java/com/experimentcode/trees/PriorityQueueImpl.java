@@ -8,14 +8,11 @@ import java.util.PriorityQueue;
 public class PriorityQueueImpl {
 
 	public static void main(String[] args) {
-		PriorityQueue<Count> queue = new PriorityQueue<>(new Comparator<Count>() {
-
-			public int compare(Count c, Count c1) {
-				if(c.freq!=c1.freq)
-					return c1.freq-c.freq;
-				return c.pos-c1.pos;
-			}
-		});
+		PriorityQueue<Count> queue = new PriorityQueue<>((c, c1) -> {
+            if(c.freq!=c1.freq)
+                return c1.freq-c.freq;
+            return c.pos-c1.pos;
+        });
 		Count c1 = new Count();
 		c1.pos = 0;
 		c1.freq = 1;
